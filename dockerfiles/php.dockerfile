@@ -47,6 +47,10 @@ RUN mkdir -p /usr/src/php/ext/redis \
     && echo 'redis' >> /usr/src/php-available-exts \
     && docker-php-ext-install redis
 
+RUN apk --no-cache add icu-dev \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install intl
+
 USER laravel
 
 CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.conf", "-R"]
