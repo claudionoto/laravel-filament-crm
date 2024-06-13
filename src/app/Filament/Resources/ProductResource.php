@@ -5,7 +5,13 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
+use Filament\Actions\DeleteAction;
 use Filament\Forms;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -27,7 +33,14 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('name')->label('Nome Prodotto')->required(),
+                Textarea::make('notes')->label('Note'),
+                Select::make('id_brand')->relationship(name:'brand', titleAttribute:'name')->preload()->native(false),
+                Grid::make(1)
+                ->schema([
+                    Toggle::make('active')->label('Active')
+                ])
+                
             ]);
     }
 
@@ -42,9 +55,10 @@ class ProductResource extends Resource
             ])
             ->filters([
                 //
-                SelectFilter::make('brand')->relationship('brand','name')->native(false)
+                SelectFilter::make('brand')->relationship('brand','name')->native(false)->preload()
             ])
             ->actions([
+                Tables\Actions\DeleteAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

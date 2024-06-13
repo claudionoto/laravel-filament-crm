@@ -33,4 +33,23 @@ class Account extends Model
         'last_logout_date',
         'login_ip_address',
     ];
+
+    protected $appends = [
+        'full_name'
+    ];
+    public function scopeSearchFullName($query,$term) {
+        $query->where(function ($query) use ($term) {
+            $query->where('name', 'LIKE', "%{$term}%")
+                  ->orWhere('surname', 'LIKE', "%{$term}%")
+                  ->orWhereRaw("CONCAT(name, ' ', surname) LIKE ?", ["%{$term}%"]);
+        });
+    }
+
+    public static function getAllFullNames()
+    {
+        return static::all()->pluck('full_name', 'id')->toArray();
+    }
+    public function getFullNameAttribute():string {
+        return "{$this->name} {$this->surname}";
+    }
 }
